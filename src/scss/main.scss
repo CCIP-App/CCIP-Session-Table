@@ -3,7 +3,10 @@
     &-session {
       &-table {
         position: relative;
-        display: grid;
+        
+        &.general {
+          display: grid;
+        }
       }
 
       &-title {

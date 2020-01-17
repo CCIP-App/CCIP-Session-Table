@@ -24,6 +24,11 @@ export interface ISession {
   tags?: ITag['id'][];
 }
 
+export interface IMobileSession {
+  time: Date;
+  sessions: ISession[];
+}
+
 export type UUID = string;
 
 export type URL = string;

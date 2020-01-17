@@ -1,52 +1,94 @@
 <template>
-  <div
-    class="ccip-app ccip-session-table"
-    :style="{
-      'grid-template-columns': gridColString,
-      'grid-template-rows': gridRowString
-    }"
-  >
+  <div class="ccip-app">
     <div
-      v-for="time in timeline"
-      :key="`time-${time}`"
+      v-if="!isMobile"
+      class="ccip-app ccip-session-table general"
       :style="{
-        'grid-column-start': 'TIME',
-        'grid-row-start': `T${time}`
+        'grid-template-columns': gridColString,
+        'grid-template-rows': gridRowString
       }"
-      class="ccip-app ccip-session-block timeblock"
     >
-      <p>{{ `${time.slice(0, 2)}:${time.slice(2, 4)}` }}</p>
+      <div
+        v-for="time in timeline"
+        :key="`time-${time}`"
+        :style="{
+          'grid-column-start': 'TIME',
+          'grid-row-start': `T${time}`
+        }"
+        class="ccip-app ccip-session-block timeblock"
+      >
+        <p>{{ formatTime(time) }}</p>
+      </div>
+      <div
+        v-for="session in sessions"
+        :key="`session-${session.id}`"
+        :style="{
+          'grid-column-start': processSessionRoom(session).start,
+          'grid-column-end': processSessionRoom(session).end,
+          'grid-row-start': `T${timeParser(session.start)}`,
+          'grid-row-end': `T${timeParser(session.end)}`
+        }"
+        class="ccip-app ccip-session-block session-block"
+      >
+        <p class="ccip-app ccip-session-tags">
+          <span
+            v-for="tag in session.tags"
+            :key="`tag-${tag}`"
+            class="ccip-app ccip-session-tag"
+          >
+            {{ getTag(tag).zh.name }}
+          </span>
+        </p>
+        <h2 class="ccip-app ccip-session-title">{{ session.zh.title }}</h2>
+        <p class="ccip-app ccip-session-speakers">
+          <span
+            v-for="speaker in session.speakers"
+            :key="`speaker-${speaker}`"
+            class="ccip-app ccip-session-speaker"
+          >
+            {{ getSpeaker(speaker).zh.name }}
+          </span>
+        </p>
+      </div>
     </div>
-    <div
-      v-for="session in sessions"
-      :key="`session-${session.id}`"
-      :style="{
-        'grid-column-start': processSessionRoom(session).start,
-        'grid-column-end': processSessionRoom(session).end,
-        'grid-row-start': `T${timeParser(session.start)}`,
-        'grid-row-end': `T${timeParser(session.end)}`
-      }"
-      class="ccip-app ccip-session-block session-block"
-    >
-      <p class="ccip-app ccip-session-tags">
-        <span
-          v-for="tag in session.tags"
-          :key="`tag-${tag}`"
-          class="ccip-app ccip-session-tag"
+    <div v-else class="ccip-app ccip-session-table mobile">
+      <div
+        v-for="group in mobileSessions"
+        :key="`session-group-${group.time}`"
+        class="ccip-app ccip-session-time-group"
+      >
+        <div class="ccip-app ccip-session-time-group head">
+          <p class="ccip-app ccip-session-time-group time">
+            {{ formatTime(timeParser(group.time)) }}
+          </p>
+        </div>
+        <div
+          v-for="session in group.sessions"
+          :key="`session-${session.id}`"
+          class="ccip-app ccip-session-time-group session-block"
         >
-          {{ getTag(tag).zh.name }}
-        </span>
-      </p>
-      <h2 class="ccip-app ccip-session-title">{{ session.zh.title }}</h2>
-      <p class="ccip-app ccip-session-speakers">
-        <span
-          v-for="speaker in session.speakers"
-          :key="`speaker-${speaker}`"
-          class="ccip-app ccip-session-speaker"
-        >
-          {{ getSpeaker(speaker).zh.name }}
-        </span>
-      </p>
+          <p class="ccip-app ccip-session-tags">
+            <span
+              v-for="tag in session.tags"
+              :key="`tag-${tag}`"
+              class="ccip-app ccip-session-tag"
+            >
+              {{ getTag(tag).zh.name }}
+            </span>
+          </p>
+          <h2 class="ccip-app ccip-session-title">{{ session.zh.title }}</h2>
+          <p class="ccip-app ccip-session-speakers">
+            <span
+              v-for="speaker in session.speakers"
+              :key="`speaker-${speaker}`"
+              class="ccip-app ccip-session-speaker"
+            >
+              {{ getSpeaker(speaker).zh.name }}
+            </span>
+          </p>
+          <p class="ccip-app ccip-session-room">{{ session.room }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -55,7 +97,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import _ from 'lodash';
 
-import { IRoom, ISessionData, ISession, ITag, ISpeaker } from './types/session';
+import {
+  IRoom,
+  ISessionData,
+  ISession,
+  ITag,
+  ISpeaker,
+  IMobileSession
+} from './types/session';
 
 @Component
 export default class CCIPSessionTable extends Vue {
@@ -75,7 +124,14 @@ export default class CCIPSessionTable extends Vue {
   })
   private rooms!: IRoom['id'][];
 
+  @Prop({
+    default: false,
+    required: false
+  })
+  private isMobile!: boolean;
+
   private sessions: ISession[] = this.sessionData.sessions;
+  private mobileSessions: IMobileSession[] = [];
   private timeline: string[] = [];
   private gridColString: string = '';
   private gridRowString: string = '';
@@ -84,13 +140,14 @@ export default class CCIPSessionTable extends Vue {
     this.preProcessSessionData();
   }
 
-  private preProcessSessionData() {
+  private preProcessSessionData(): void {
     this.processRoomData();
     this.processTimelineData();
+    this.processMobileSession();
     this.measureTableGrid();
   }
 
-  private processRoomData() {
+  private processRoomData(): void {
     if (
       !this.rooms ||
       typeof this.rooms === 'undefined' ||
@@ -100,7 +157,7 @@ export default class CCIPSessionTable extends Vue {
     }
   }
 
-  private processTimelineData() {
+  private processTimelineData(): void {
     const sessionStartTimeCollection: Date[] = _.map(
       this.sessionData.sessions,
       'start'
@@ -117,6 +174,20 @@ export default class CCIPSessionTable extends Vue {
           this.timeParser
         )
       )
+    );
+  }
+
+  private processMobileSession(): void {
+    const groupedSession = _.groupBy(this.sessions, 'start');
+    const groupedSessionTime = Object.keys(groupedSession);
+    const groupedSessionCollection = Object.values(groupedSession);
+
+    this.mobileSessions = _.orderBy(
+      _.map(groupedSessionTime, (time, index) => ({
+        time: new Date(time),
+        sessions: groupedSessionCollection[index]
+      })),
+      'time'
     );
   }
 
@@ -143,7 +214,7 @@ export default class CCIPSessionTable extends Vue {
     }
   }
 
-  private measureTableGrid() {
+  private measureTableGrid(): void {
     this.gridColString = `[TIME] 60px [${_.join(
       this.rooms,
       '] 1fr ['
@@ -170,6 +241,10 @@ export default class CCIPSessionTable extends Vue {
 
   private getTag(id: ITag['id']): ITag {
     return _.find(this.sessionData.tags, ['id', id]) as ITag;
+  }
+
+  private formatTime(time: string): string {
+    return `${time.slice(0, 2)}:${time.slice(2, 4)}`;
   }
 }
 </script>
