@@ -1,6 +1,9 @@
 {
   "name": "@ccip-app/schedule-table",
   "version": "0.0.1",
+  "license": "GPL-3.0",
+  "repository": "https://github.com/CCIP-App/CCIP-Session-Table",
+  "author": "Aries Cs <aries0d0f@gmail.com>",
   "main": "dist/ccip-session-table.umd.js",
   "module": "dist/ccip-session-table.esm.js",
   "unpkg": "dist/ccip-session-table.min.js",
