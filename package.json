@@ -1,0 +1,54 @@
+{
+  "name": "ccip-schedule-table",
+  "version": "0.0.1",
+  "main": "dist/ccip-session-table.umd.js",
+  "module": "dist/ccip-session-table.esm.js",
+  "unpkg": "dist/ccip-session-table.min.js",
+  "browser": {
+    "./sfc": "src/SessionTable.vue"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "npm run build:umd && npm run build:es && npm run build:unpkg",
+    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/ccip-session-table.umd.js",
+    "build:es": "rollup --config build/rollup.config.js --format es --file dist/ccip-session-table.esm.js",
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/ccip-session-table.min.js",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "core-js": "^3.4.4",
+    "rollup": "^1.29.0",
+    "rollup-plugin-buble": "^0.19.8",
+    "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-vue": "^5.1.5",
+    "vue": "^2.6.10",
+    "vue-class-component": "^7.0.2",
+    "vue-property-decorator": "^8.3.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.1.0",
+    "@vue/cli-plugin-eslint": "^4.1.0",
+    "@vue/cli-plugin-typescript": "^4.1.0",
+    "@vue/cli-service": "^4.1.0",
+    "@vue/eslint-config-prettier": "^5.0.0",
+    "@vue/eslint-config-typescript": "^4.0.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-vue": "^5.0.0",
+    "lint-staged": "^9.5.0",
+    "node-sass": "^4.12.0",
+    "prettier": "^1.19.1",
+    "sass-loader": "^8.0.0",
+    "typescript": "~3.5.3",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,vue,ts}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  }
+}
