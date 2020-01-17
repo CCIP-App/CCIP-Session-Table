@@ -1,5 +1,11 @@
 <template>
-  <div class="ccip-app ccip-session-table"></div>
+  <div
+    class="ccip-app ccip-session-table"
+    :style="{
+      'grid-template-columns': gridColString,
+      'grid-template-rows': gridRowString
+    }"
+  ></div>
 </template>
 
 <script lang="ts">
@@ -51,28 +57,41 @@ export default class CCIPSessionTable extends Vue {
       'end'
     );
 
-    this.timeline = _.map(
-      _.sortedUniq(
-        _.concat(sessionStartTimeCollection, sessionEndTimeCollection)
+    this.timeline = _.orderBy(
+      _.uniq(
+        _.map(
+          _.concat(sessionStartTimeCollection, sessionEndTimeCollection),
+          this.timeParser
+        )
       ),
-      this.timeParser
+      this.timelineParser,
+      'desc'
     );
   }
 
   private measureTableGrid() {
-    this.gridColString = `[TIME] 60px ${_.join(this.rooms, ' 1fr ')} 1fr [END]`;
+    this.gridColString = `[TIME] 60px [${_.join(
+      this.rooms,
+      '] 1fr ['
+    )}] 1fr [END]`;
 
-    this.gridRowString = `[HEAD] auto ${_.join(
+    this.gridRowString = `[HEAD] auto [T${_.join(
       this.timeline,
-      ' auto '
-    )} auto [END]`;
+      '] auto [T'
+    )}] auto [TAIL]`;
   }
 
   private timeParser(datetime: Date | string): string {
-    return new Date(datetime).toLocaleTimeString('en-US', {
-      timeZone: 'Asia/Taipei',
-      hour12: false
-    });
+    return new Date(datetime)
+      .toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Taipei',
+        hour12: false
+      })
+      .replace(/:/g, '');
+  }
+
+  private timelineParser(datetime: Date | string): number {
+    return parseInt(this.timeParser(datetime));
   }
 }
 </script>
