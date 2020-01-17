@@ -1,0 +1,10 @@
+.ccip-app {
+  &.ccip {
+    &-session {
+      &-table {
+        position: relative;
+        display: grid;
+      }
+    }
+  }
+}

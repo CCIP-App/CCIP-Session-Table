@@ -1,5 +1,5 @@
 <template>
-  <div class="ccip ccip-session-table"></div>
+  <div class="ccip-app ccip-session-table"></div>
 </template>
 
 <script lang="ts">
