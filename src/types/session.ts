@@ -21,7 +21,7 @@ export interface ISession {
   zh?: ISessionContent;
   en?: ISessionContent;
   speakers: ISpeaker['id'][];
-  tags?: string[];
+  tags?: ITag['id'][];
 }
 
 export type UUID = string;
