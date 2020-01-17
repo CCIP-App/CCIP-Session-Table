@@ -21,11 +21,11 @@ export default class CCIPSessionTable extends Vue {
   })
   private sessionData!: ISessionData;
 
-  private sessions!: ISession[];
-  private rooms!: IRoom['id'][];
-  private timeline!: string[];
-  private gridColString!: string;
-  private gridRowString!: string;
+  private sessions: ISession[] = this.sessionData.sessions;
+  private rooms: IRoom['id'][] = [];
+  private timeline: string[] = [];
+  private gridColString: string = '';
+  private gridRowString: string = '';
 
   public created() {
     this.preProcessSessionData();
