@@ -5,6 +5,10 @@
         position: relative;
         display: grid;
       }
+
+      &-title {
+        white-space: pre-wrap;
+      }
     }
   }
 }
