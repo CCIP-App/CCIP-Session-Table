@@ -1,5 +1,5 @@
 {
-  "name": "ccip-schedule-table",
+  "name": "@ccip-app/schedule-table",
   "version": "0.0.1",
   "main": "dist/ccip-session-table.umd.js",
   "module": "dist/ccip-session-table.esm.js",
