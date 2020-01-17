@@ -15,5 +15,6 @@ export default {
     }),
     rollupTypeScript(),
     buble()
-  ]
+  ],
+  external: ['vue-property-decorator', 'lodash']
 };
