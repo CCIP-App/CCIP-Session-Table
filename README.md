@@ -1,4 +1,4 @@
-# ccip-schedule-table
+# ccip-session-table
 
 ## Project setup
 ```
