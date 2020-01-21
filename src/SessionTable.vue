@@ -15,9 +15,20 @@
           'grid-column-start': 'TIME',
           'grid-row-start': `T${time}`
         }"
-        class="ccip-app ccip-session-block timeblock"
+        class="ccip-app ccip-session-block time-block"
       >
         <p>{{ formatTime(time) }}</p>
+      </div>
+      <div
+        v-for="room in rooms"
+        :key="`room-${room}`"
+        :style="{
+          'grid-column-start': `${room}`,
+          'grid-row-start': 'HEAD'
+        }"
+        class="ccip-app ccip-session-block room-block"
+      >
+        <p>{{ room }}</p>
       </div>
       <div
         v-for="session in sessions"
