@@ -39,6 +39,7 @@
           'grid-row-start': `T${timeParser(session.start)}`,
           'grid-row-end': `T${timeParser(session.end)}`
         }"
+        :class="{ clickable: session.type !== 'Ev' }"
         class="ccip-app ccip-session-block session-block"
       >
         <p class="ccip-app ccip-session-tags">
@@ -76,6 +77,7 @@
         <div
           v-for="session in group.sessions"
           :key="`session-${session.id}`"
+          :class="{ clickable: session.type !== 'Ev' }"
           class="ccip-app ccip-session-time-group session-block"
         >
           <p class="ccip-app ccip-session-tags">
@@ -227,8 +229,6 @@ export default class CCIPSessionTable extends Vue {
           }
         });
       }
-
-      console.log(session.zh!.title, broadcastSet);
 
       return {
         start: _.first(broadcastSet) as IRoom['id'],
