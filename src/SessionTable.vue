@@ -99,6 +99,15 @@
               {{ getSpeaker(speaker).zh.name }}
             </span>
           </p>
+          <p class="ccip-app ccip-session-time">
+            {{
+              (new Date(session.end).getTime() -
+                new Date(session.start).getTime()) /
+                1000 /
+                60
+            }}
+            min
+          </p>
           <p class="ccip-app ccip-session-room">{{ session.room }}</p>
         </div>
       </div>
