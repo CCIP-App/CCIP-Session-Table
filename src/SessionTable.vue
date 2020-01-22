@@ -41,6 +41,7 @@
         }"
         :class="{ clickable: session.type !== 'Ev' }"
         class="ccip-app ccip-session-block session-block"
+        @click="popUp(session)"
       >
         <p class="ccip-app ccip-session-tags">
           <span
@@ -79,6 +80,7 @@
           :key="`session-${session.id}`"
           :class="{ clickable: session.type !== 'Ev' }"
           class="ccip-app ccip-session-time-group session-block"
+          @click="popUp(session)"
         >
           <p class="ccip-app ccip-session-tags">
             <span
@@ -116,7 +118,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, PropSync, Prop, Vue } from 'vue-property-decorator';
 import _ from 'lodash';
 
 import {
@@ -130,11 +132,17 @@ import {
 
 @Component
 export default class CCIPSessionTable extends Vue {
-  @Prop({
+  @PropSync('isPopup', {
     default: false,
     required: false
   })
-  private isPopup!: boolean;
+  private childIsPopup!: boolean;
+
+  @PropSync('popUpSession', {
+    default: {},
+    required: false
+  })
+  private childPopUpSession!: ISession;
 
   @Prop({
     required: true
@@ -296,6 +304,13 @@ export default class CCIPSessionTable extends Vue {
     rooms: IRoom['id'][]
   ): Array<{ id: IRoom['id']; index: number }> {
     return _.map(rooms, (room, index) => ({ id: room, index }));
+  }
+
+  private popUp(session: ISession): void {
+    if (session.type !== 'Ev') {
+      this.childPopUpSession = session;
+      this.childIsPopup = true;
+    }
   }
 }
 </script>
