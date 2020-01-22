@@ -205,18 +205,37 @@ export default class CCIPSessionTable extends Vue {
   private processSessionRoom(
     session: ISession
   ): { start: IRoom['id']; end?: IRoom['id'] } {
+    // Broadcast Process
     if (session.broadcast && typeof session.broadcast !== 'undefined') {
+      let broadcastSet: IRoom['id'][] = session.broadcast;
+      if (!_.isEqual(this.sessionData.rooms, this.rooms)) {
+        // Handle custom room index
+        const differentRoomCompairGroup = _.groupBy(
+          _.xorWith(
+            this.mapRoom(_.map(this.sessionData.rooms, 'id')),
+            this.mapRoom(this.rooms),
+            _.isEqual
+          ),
+          'id'
+        );
+
+        broadcastSet = _.map(session.broadcast, room => {
+          if (_.includes(Object.keys(differentRoomCompairGroup), room)) {
+            return this.rooms[differentRoomCompairGroup[room][0].index];
+          } else {
+            return room;
+          }
+        });
+      }
+
+      console.log(session.zh!.title, broadcastSet);
+
       return {
-        start: (_.first(this.rooms) ===
-        _.first(_.map(this.sessionData.rooms, 'id'))
-          ? _.first(session.broadcast)
-          : _.includes(session.broadcast, _.first(this.rooms))
-          ? _.first(this.rooms)
-          : _.first(session.broadcast)) as string,
+        start: _.first(broadcastSet) as IRoom['id'],
         end:
-          _.last(session.broadcast) === _.last(this.rooms)
+          _.last(broadcastSet) === _.last(this.rooms)
             ? 'END'
-            : this.rooms[_.indexOf(this.rooms, _.last(session.broadcast)) + 1]
+            : this.rooms[_.indexOf(this.rooms, _.last(broadcastSet)) + 1]
       };
     } else {
       return {
@@ -256,6 +275,12 @@ export default class CCIPSessionTable extends Vue {
 
   private formatTime(time: string): string {
     return `${time.slice(0, 2)}:${time.slice(2, 4)}`;
+  }
+
+  private mapRoom(
+    rooms: IRoom['id'][]
+  ): Array<{ id: IRoom['id']; index: number }> {
+    return _.map(rooms, (room, index) => ({ id: room, index }));
   }
 }
 </script>
