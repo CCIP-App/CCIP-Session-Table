@@ -200,7 +200,13 @@ export default class CCIPSessionTable extends Vue {
   }
 
   private processMobileSession(): void {
-    const groupedSession = _.groupBy(this.sessions, 'start');
+    const events = _.filter(this.sessions, ['type', 'Ev']);
+    const sessions = _.concat(
+      _.first(events) as ISession,
+      _.filter(this.sessions, session => session.type !== 'Ev'),
+      _.last(events) as ISession
+    );
+    const groupedSession = _.groupBy(sessions, 'start');
     const groupedSessionTime = Object.keys(groupedSession);
     const groupedSessionCollection = Object.values(groupedSession);
 
