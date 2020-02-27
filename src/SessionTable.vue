@@ -43,6 +43,15 @@
         class="ccip-app ccip-session-block session-block"
         @click="popUp(session)"
       >
+        <!-- SEO Friendly a href element -->
+        <a
+          v-if="urlPrefix"
+          v-show="false"
+          :href="`${urlPrefix}/${session.id}`"
+          :alt="session.zh.title"
+        >
+          {{ session.zh.title }}
+        </a>
         <p class="ccip-app ccip-session-tags">
           <span
             v-for="tag in session.tags"
@@ -82,6 +91,15 @@
           class="ccip-app ccip-session-time-group session-block"
           @click="popUp(session)"
         >
+          <!-- SEO Friendly a href element -->
+          <a
+            v-if="urlPrefix"
+            v-show="false"
+            :href="`${urlPrefix}/${session.id}`"
+            :alt="session.zh.title"
+          >
+            {{ session.zh.title }}
+          </a>
           <p class="ccip-app ccip-session-tags">
             <span
               v-for="tag in session.tags"
@@ -159,6 +177,12 @@ export default class CCIPSessionTable extends Vue {
     required: false
   })
   private isMobile!: boolean;
+
+  @Prop({
+    default: '',
+    required: false
+  })
+  private urlPrefix!: string;
 
   private sessions: ISession[] = this.sessionData.sessions;
   private mobileSessions: IMobileSession[] = [];
